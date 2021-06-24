@@ -61,10 +61,35 @@ class GoogleCloudDatabase implements IPluginStorage<VerdaccioConfigGoogleStorage
     return GOOGLE_OPTIONS;
   }
 
-  public search(onPackage: Callback, onEnd: Callback): void {
-    this.logger.warn('search method has not been implemented yet');
+  public async search(onPackage: Callback, onEnd: Callback): Promise<void> {
+    try
+    {
+      const entities = await this.helper.getEntities(this.kind);
+      const entitiesInfoMap = entities.map(this._fetchPackageInfo.bind(this, onPackage));
+
+      await Promise.all(entitiesInfoMap);
+    }
+    catch(err)
+    {
+      const error: VerdaccioError = getInternalError(err.message);
+      this.logger.warn({error: error.message}, 'gcloud: [datastore search] error @{error}');
+      return Promise.reject(error);
+    }
 
     onEnd();
+  }
+
+  private async _fetchPackageInfo(onPackage: Function, entity: any): Promise<void> {
+    return new Promise((resolve): void => {
+      return onPackage(
+        {
+          name: entity.name,
+          path: entity.name,
+          time: Date.now()
+        },
+        resolve
+      )
+    });
   }
 
   public saveToken(token: Token): Promise<void> {
