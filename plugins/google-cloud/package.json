@@ -1,5 +1,5 @@
 {
-  "name": "com.defcon1.verdaccio-google-cloud",
+  "name": "@DefCon1VR/verdaccio-google-cloud",
   "version": "10.0.0",
   "description": "Google Cloud storage implementation for Verdaccio",
   "keywords": [
